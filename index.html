@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>SBDCodec demo page</title>
+  <title>DeCodec V2 demo page</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css"/>
   <script type="text/javascript" src="./download.js"></script>
@@ -17,33 +17,541 @@
 <body> <!-- onload="init();">-->
 <body> <!-- onload="init();">-->
 <div align="center">
-  <h1>De-Codec: Decoupling Speech and Background-sound in Codec To Allow Explicit Feature Selections for Downstream Audio Tasks.</h1>
+  <h1>DeCodec: Towards Controllable Audio Processing via Speech and Background sound Decoupling in Neural Codecs</h1>
 </div>
-<!--
+
 <div align="center">
-  <h3><b>Xiaoxue Luo<sup>1,2</sup>, Jinwei Huang<sup>1,2</sup>, Zihao Cui<sup>1,2</sup>, Tao Li<sup>1,2</sup>, Yanan Chen<sup>1,2</sup>, Yingying Gao<sup>1,2</sup>, Shilei Zhang<sup>1,2,*</sup>, Junlan Feng<sup>1,2</sup>.</b></h3>
+  <h3><b>Xiaoxue Luo<sup>1,2</sup>, Jinwei Huang<sup>1,2</sup>, Runyan Yang<sup>1,2</sup>, Yingying Gao<sup>1,2</sup>, Shilei Zhang<sup>1,2,*</sup>, Junlan Feng<sup>1,2</sup>.</b></h3>
 </div>
 <div align="center">
   <p><sup>1</sup>China Mobile Research Institute, China</p>
   <p><sup>2</sup>State Key Laboratory of Multimedia Information Processing, Peking University, China</p>
 </div>
--->
+
 <div align="center">
   <h2>Abstract</h2>
 </div>
-<div>
-  <p>This paper proposes De-Codec, a codec method that decouples speech and background-sound (BGS) tokens during the tokenization of input audio, enabling downstream audio tasks to explicitly select efficient input tokens. To achieve complete decoupling, we design a dual-path quantization block inserted into an encoder-decoder network for the independent vector quantization of speech and background sound. Moreover, we propose a token swapping training method, which replaces the BGS tokens of the input audio and supervises the De-Codec to reconstruct the input speech with the replaced background-sound. The experimental results demonstrate that the proposed De-Codec can achieve complete decoupling of speech and BGS tokens while maintaining audio reconstruction performance. Moreover, we implement the De-Codec on speech denoising and background-sound replacement tasks, verifying the efficiency of the decoupled tokens for downstream audio tasks.</p>
+<div align="center" style="text-align: justify; text-align-last: left;">
+  <p>In real world, speech and background sound coexist, and different audio tasks focus on distinct information components above.
+      This paper proposes a novel neural codec named DeCodec to decouple speech and background sound from the representation domain and further decomposes speech into semantic and residual paralinguistic, thereby enabling a unified feature extractor to provide controllable information representations tailored to different audio tasks, filling a gap in existing audio codecs.
+      Specifically, based on the classical codec architecture, the proposed subspace orthogonal projection block projects primary audio embeddings into two orthogonal subspaces for representation.
+      Combined with the proposed representation swap training procedure, the two orthogonal subspaces can be constrained to correlate to the speech and background sound subspaces, respectively, enabling a parallel residual vector quantizers (RVQs) to quantize the speech and background sound representations.
+      Additionally, by introducing semantic guidance to speech RVQ, speech is hierarchically quantized into semantic and residual sublinguistic quantized vectors.
+      Experimental results show that DeCodec alone can achieve speech reconstruction and speech enhancement tasks with advanced performance.
+      Furthermore, the one-shot VC task also confirms the effective disentanglement of semantic-residual sublinguistic information by DeCodec.
+      In downstream speech recognition tasks, DeCodec representations significantly improve noise robustness and outperform baselines.
+      In downstream speech synthesis (TTS) tasks, the proposed DeCodedc tokens achieve zero-shot TTS with noisy speech prompts and allows control of whether background sound is retained.</p>
+</div>
+
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 600px">
+      <col style="width: 600px">
+    </colgroup>
+
+	<tfoot>
+      <tr>
+        <th class="tg-c2ow"><strong>Figure 1.</strong> The overview of the proposed DeCodec.</th>
+		<th class="tg-c2ow"><strong>Figure 2.</strong> Flowchart of the proposed RST training procedure.</th>
+      </tr>
+    </tfoot>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><img src="image/DeCodec-struct.png" width="99%"></td>
+		<td class="tg-ihkz"><img src="image/DeCodec-RST.png" width="99%"></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div align="center">
-	<img src="image/De-Codec_v5.png" width="80%">
-	<p><strong>Figure 1.</strong> The overview of the proposed De-Codec and its adapted speech denoising and background sound replacing models.</p>
+  <h2>Results: DeCodec-only</h2>
 </div>
 
 <div align="center">
-  <h2>Results</h2>
+  <h3>a. Overview of functions</h3>
 </div>
 
+<div align="center">
+	<p><strong>Table 1.</strong> Guidelines for using DeCodec to perform speech reconstruction, SE, background sound extraction, one-shot VC, and one-shot VC+SE functions.</p>
+	<img src="image/Task-guideline.png" width="70%">
+</div>
+
+<div align="center">
+	<img src="image/DeCodec-spec-demo-1.png" width="80%">
+	<p><strong>Figure 3.</strong> Demos of audio tasks processed by DeCodec.</p>
+	<!--p>(a-1) Init y<sub>11</sub>. (b-1) Reconstruction. (c-1) SE. (d-1) BGS Extraction. (e-1) one-shot VC with audio prompt y<sub>22</sub>. (f-1) one-shot VC+SE.</p>-->
+	<!---p>(a-2) Init y<sub>22</sub>. (b-2) Reconstruction. (c-2) SE. (d-2) BGS Extraction. (e-2) one-shot VC with audio prompt y<sub>11</sub>. (f-2) one-shot VC+SE.</p>-->
+</div>
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+	  <col style="width: 100px">
+	  <col style="width: 100px">
+    </colgroup>
+    <tbody>	  
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/decodec-demo/1-f1s1_n2_20dB.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/decodec-demo/2-s1_f1s1_n2_20dB_recon.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/decodec-demo/3-test_pred_wave_s1denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/decodec-demo/4-test_pred_wave_n1.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/decodec-demo/5-test_pred_wave_c1r2n1.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/decodec-demo/6-test_pred_wave_c1r2denoise.wav"></audio></td>
+      </tr>
+    </tbody>	
+	<tfoot>
+      <tr>
+        <th class="tg-c3ow">(a-1)</th>
+		<th class="tg-c3ow">(b-1)</th>
+        <th class="tg-c3ow">(c-1)</th>
+        <th class="tg-c3ow">(d-1)</th>
+		<th class="tg-c3ow">(e-1)</th>
+		<th class="tg-c3ow">(f-1)</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+	  <col style="width: 100px">
+	  <col style="width: 100px">
+    </colgroup>
+    <tbody>	  
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/decodec-demo/a1-m1s2_n1_5dB.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/decodec-demo/a2-s2_m1s2_n1_5dB_recon.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/decodec-demo/a3-test_pred_wave_s2denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/decodec-demo/a4-test_pred_wave_n2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/decodec-demo/a5-test_pred_wave_c2r1n2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/decodec-demo/a6-test_pred_wave_c2r1denoise.wav"></audio></td>
+      </tr>
+    </tbody>	
+	<tfoot>
+      <tr>
+        <th class="tg-c3ow">(a-2)</th>
+		<th class="tg-c3ow">(b-2)</th>
+        <th class="tg-c3ow">(c-2)</th>
+        <th class="tg-c3ow">(d-2)</th>
+		<th class="tg-c3ow">(e-2)</th>
+		<th class="tg-c3ow">(f-2)</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+<div align="center">
+  <h3>b. Codec Reconstruction</h3>
+</div>
+
+<div align="center">
+	<img src="image/Codec-results.png" width="50%">
+	<p><strong>Table 2.</strong> Reconstruction quality evaluation of codec models. Best results are highlighted in <strong>BOLD</strong>.</p>
+</div>
+
+<div align="center">
+  <h3>Demos of Reconstruction performance of Code models</h3>
+</div>
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+	  <col style="width: 100px">
+	  <col style="width: 100px">
+
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="tg-c6ow">Init</th>
+        <th class="tg-c6ow">Encodec</th>
+		<th class="tg-c6ow">DAC</th>
+		<th class="tg-c6ow">SpeechTokenizer</th>
+		<th class="tg-c6ow">DeCodec</th>
+      </tr>
+    </thead>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Init/1188-133604-0040_clean.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Encodec/1188-133604-0040_clean.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DAC/1188-133604-0040_clean.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/ST/1188-133604-0040_clean.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DeCodec/1188-133604-0040_clean.wav"></audio></td>
+      </tr>
+
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Init/4992-41806-0017_clean.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Encodec/4992-41806-0017_clean.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DAC/4992-41806-0017_clean.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/ST/4992-41806-0017_clean.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DeCodec/4992-41806-0017_clean.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Init/2094-142345-0004_noisy.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Encodec/2094-142345-0004_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DAC/2094-142345-0004_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/ST/2094-142345-0004_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DeCodec/2094-142345-0004_noisy.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Init/6829-68769-0005_noisy.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Encodec/6829-68769-0005_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DAC/6829-68769-0005_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/ST/6829-68769-0005_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DeCodec/6829-68769-0005_noisy.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Init/8224-274384-0001_noisy.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/Encodec/8224-274384-0001_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DAC/8224-274384-0001_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/ST/8224-274384-0001_noisy.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/Codec/DeCodec/8224-274384-0001_noisy.wav"></audio></td>
+      </tr>
+
+	  <tr>
+	  </tr>
+    </tbody>
+  </table>
+</div>
+
+<div align="center">
+  <h3>c. Speech Enhancement</h3>
+</div>
+
+<div align="center">
+	<img src="image/SE-results.png" width="50%">
+	<p><strong>Table 3.</strong> The DNSMOS scores of SE based on different SE models on the DNS Challenge test set. Best results are highlighted in <strong>BOLD</strong>.</p>
+</div>
+
+<div align="center">
+  <h3>Demos of SE, BGS extraction and semantic reconstruction</h3>
+</div>
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+	  <col style="width: 100px">
+	  <col style="width: 100px">
+
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="tg-c6ow">Init</th>
+        <th class="tg-c6ow">StoRM</th>
+		<th class="tg-c6ow">DeCodec: SE</th>
+		<th class="tg-c6ow">DeCodec: BGS extraction</th>
+		<th class="tg-c6ow">DeCodec: semantic reconstruction</th>
+      </tr>
+    </thead>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/Init/audioset_realrec_car__1h9umA8agI.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/StoRM/audioset_realrec_car__1h9umA8agI.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec/audioset_realrec_car__1h9umA8agI.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-BGS/audioset_realrec_car__1h9umA8agI.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-semantic/audioset_realrec_car__1h9umA8agI.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/Init/audioset_realrec_door_-7eCzlHCVFc.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/StoRM/audioset_realrec_door_-7eCzlHCVFc.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec/audioset_realrec_door_-7eCzlHCVFc.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-BGS/audioset_realrec_door_-7eCzlHCVFc.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-semantic/audioset_realrec_door_-7eCzlHCVFc.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/Init/audioset_realrec_munching_0rwCWRQLreg.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/StoRM/audioset_realrec_munching_0rwCWRQLreg.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec/audioset_realrec_munching_0rwCWRQLreg.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-BGS/audioset_realrec_munching_0rwCWRQLreg.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-semantic/audioset_realrec_munching_0rwCWRQLreg.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/Init/audioset_realrec_barking_18ndo219WMw.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/StoRM/audioset_realrec_barking_18ndo219WMw.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec/audioset_realrec_barking_18ndo219WMw.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-BGS/audioset_realrec_barking_18ndo219WMw.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-semantic/audioset_realrec_barking_18ndo219WMw.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/Init/audioset_realrec_printer__FhFPXJW3WE.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/StoRM/audioset_realrec_printer__FhFPXJW3WE.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec/audioset_realrec_printer__FhFPXJW3WE.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-BGS/audioset_realrec_printer__FhFPXJW3WE.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/SE/DeCodec-semantic/audioset_realrec_printer__FhFPXJW3WE.wav"></audio></td>
+      </tr>
+
+	  <tr>
+	  </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+<div align="center">
+  <h3>d. one-shot VC</h3>
+</div>
+<div align="center">
+	<img src="image/VC-results.png" width="50%">
+	<p><strong>Table 4.</strong> Results of one-shot VC on different codec models on the noisy speech test set. Best results are highlighted in <strong>BOLD</strong>.</p>
+</div>
+
+<div align="center">
+  <h3>Extra demos of one-shot VC with different methods</h3>
+</div>
+<div align="center">
+  <h3>Demos of one-shot VC</h3>
+</div>
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+	  <col style="width: 100px">
+	  <col style="width: 100px">
+
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="tg-c6ow">Source</th>
+        <th class="tg-c6ow">Reference</th>
+		<th class="tg-c6ow">SpeechTokenizer</th>
+		<th class="tg-c6ow">StoRM+SpeechTokenizer</th>
+		<th class="tg-c6ow">DeCodec</th>
+      </tr>
+    </thead>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/source/61-70968-0007.flac"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/reference/61-70968-0007.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/ST/61-70968-0007.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/StoRM-ST/61-70968-0007.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/DeCodec/61-70968-0007.flac"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/source/908-157963-0018.flac"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/reference/908-157963-0018.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/ST/908-157963-0018.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/StoRM-ST/908-157963-0018.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/DeCodec/908-157963-0018.flac"></audio></td>
+      </tr>
+
+      <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/source/7729-102255-0042.flac"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/reference/7729-102255-0042.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/ST/7729-102255-0042.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/StoRM-ST/7729-102255-0042.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/DeCodec/7729-102255-0042.flac"></audio></td>
+      </tr>
+
+      <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/source/5683-32879-0019.flac"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/reference/5683-32879-0019.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/ST/5683-32879-0019.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/StoRM-ST/5683-32879-0019.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/DeCodec/5683-32879-0019.flac"></audio></td>
+      </tr>
+
+
+      <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/source/2961-960-0022.flac"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/reference/2961-960-0022.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/ST/2961-960-0022.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/StoRM-ST/2961-960-0022.flac"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/VC/DeCodec/2961-960-0022.flac"></audio></td>
+      </tr>
+
+
+	  <tr>
+	  </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+
+
+
+
+<div align="center">
+  <h3>e. Ablation study</h3>
+</div>
+<div align="center">
+	<img src="image/Ablation-results.png" width="50%">
+	<p><strong>Table 5.</strong> Results of Ablation studies on Decodec on the noisy speech test set. Best results are highlighted in <strong>BOLD</strong>.</p>
+</div>
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 600px">
+      <col style="width: 500px">
+    </colgroup>
+
+	<tbody>
+      <tr>
+        <th class="tg-c2ow"><strong>Figure 4.</strong> Analysis of the proposed SOP method.</th>
+        <th class="tg-c2ow"><strong>Figure 5.</strong> Visualization of quantized output of different SRVQ layers of Decodec.</th>
+      </tr>
+    </tbody>
+    <tfoot>
+	  <tr>
+		<td class="tg-ihkz"><img src="image/SOP-analysis.png" width="99%"></td>
+		<td class="tg-ihkz"><img src="image/SG-analysis.png" width="99%"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+
+
+
+
+
+<div align="center">
+  <h2>Results: Downstream Tasks</h2>
+</div>
+
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 600px">
+      <col style="width: 600px">
+    </colgroup>
+
+	<tbody>
+      <tr>
+        <th class="tg-c2ow"><strong>Table 6.</strong> The WER* results of ASR based on different codec models. Best results are highlighted in <strong>BOLD</strong>.</th>
+		<th class="tg-c2ow"><strong>Table 7.</strong> The subjective results of one-shot TTS based on different codecs on the noisy speech test set. Best results are highlighted in <strong>BOLD</strong>.</th>
+      </tr>
+    </tbody>
+    <tfoot>
+	  <tr>
+		<td class="tg-ihkz"><img src="image/ASR-results.png" width="99%"></td>
+		<td class="tg-ihkz"><img src="image/TTS-results.png" width="99%"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+<div align="center">
+	<img src="image/demo_tts_1.png" width="70%">
+	<p><strong>Figure 6.</strong> Spectrogram visualization of the real recording prompt, generated speech by SpeechTokenizer, SpeechTokenizer with StoRM pre-SE, DeCodec with background-sound removed and DeCodec with background-sound kept. The text promt is 'Bless the Maker and his water'.</p>
+	<!--p>(a-1) Init y<sub>11</sub>. (b-1) Reconstruction. (c-1) SE. (d-1) BGS Extraction. (e-1) one-shot VC with audio prompt y<sub>22</sub>. (f-1) one-shot VC+SE.</p>-->
+	<!---p>(a-2) Init y<sub>22</sub>. (b-2) Reconstruction. (c-2) SE. (d-2) BGS Extraction. (e-2) one-shot VC with audio prompt y<sub>11</sub>. (f-2) one-shot VC+SE.</p>-->
+</div>
 <div class="btn-ab" align="center">
   <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
     <colgroup>
@@ -53,20 +561,20 @@
       <col style="width: 100px">
 	  <col style="width: 100px">
     </colgroup>
-    <tbody>	  
+    <tbody>
 	  <tr>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            	<source src="audio_demo/a1_Init_m_n4.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            	<source src="audio_demo/a2_Codec_m_n4.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            	<source src="audio_demo/a3_Exc_m_n4.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-				<source src="audio_demo/a4_SE_m_n4.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-				<source src="audio_demo/a5_BGE_m_n4_m_n4 A dog barks quickly.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/TTS-demo/2-1-dune_m_2.wav"></audio></td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/TTS-demo/2-2-tts_dune_m_2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="audio/TTS-demo/2-3-tts_dune_m_2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/TTS-demo/2-4-tts_dune_m_2_denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+				<source src="audio/TTS-demo/2-5-tts_dune_m_2.wav"></audio></td>
       </tr>
-    </tbody>	
+    </tbody>
 	<tfoot>
       <tr>
         <th class="tg-c3ow">(a)</th>
@@ -78,158 +586,160 @@
     </tfoot>
   </table>
 </div>
+
+
+<div align="center">
+  <h3>Extra demos of TTS</h3>
+</div>
+
 <div class="btn-ab" align="center">
   <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
     <colgroup>
       <col style="width: 100px">
-      <col style="width: 100px">
+      <col style="width: 200px">
       <col style="width: 100px">
       <col style="width: 100px">
 	  <col style="width: 100px">
+	  <col style="width: 100px">
+
     </colgroup>
-    <tbody>	  
-	  <tr>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            	<source src="audio_demo/b1_Init_f_sad.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            	<source src="audio_demo/b2_Codec_f_sad.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            	<source src="audio_demo/b3_Exc_f_sad.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-				<source src="audio_demo/b4_SE_f_sad.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-				<source src="audio_demo/b5_BGE_f_sad_A person whisting.wav"></audio></td>
-      </tr>
-    </tbody>	
-	<tfoot>
-      <tr>
-        <th class="tg-c3ow">(f)</th>
-		<th class="tg-c3ow">(g)</th>
-        <th class="tg-c3ow">(h)</th>
-        <th class="tg-c3ow">(i)</th>
-		<th class="tg-c3ow">(j)</th>
-      </tr>
-    </tfoot>
-  </table>
-</div>
-<div align="center">
-	<img src="image/All_demo_plot_8newnew.png" width="80%">
-	<p><strong>Figure 2.</strong> Demos of speech processed by De-Codec and the related downstream tasks.</p>
-	<p>(a) Init y<sub>11</sub>. (b) Reconstructed y<sub>11</sub> by De-Codec. (c) Decode with zs<sub>1</sub>+zb<sub>2</sub>. (d) SD with zs<sub>1</sub> (e) BGSR with zs<sub>1</sub> and "A dog barks quickly" prompt.</p>
-	<p>(f) Init y<sub>22</sub> (clean speech). (g) Reconstructed y<sub>22</sub> by De-Codec. (h) Decode with zs<sub>2</sub>+zb<sub>1</sub>. (i) SD with zs<sub>2</sub>. (j) BGSR with zs<sub>2</sub> and "A person whisting" prompt.</p>
-</div>
-
-<div class="btn-ab" align="center">
-  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
-    <colgroup>
-      <col style="width: 400px">
-      <col style="width: 400px">
-	  <col style="width: 400px">
-    </colgroup>
-    <tbody>	  
-	  <tr>
-		<td class="tg-ihkz"><img src="image/vector_compare_new.png" width="90%"></td>
-		<td class="tg-ihkz"><img src="image/Codec_results_v2.png" width="90%"></td>
-		<td class="tg-ihkz"><img src="image/SD_results.png" width="90%"></td>
-      </tr>
-    </tbody>	
-	<tfoot>
-      <tr>
-        <th class="tg-c3ow"><strong>Figure 3.</strong> Visualization of speech, background-sound and the composite audio quantized representations.</th>
-		<th class="tg-c3ow"><strong>Table 1.</strong> Reconstruction quality evaluation of codecs based on Codec-SUPERB. Best results are highlighted in <strong>bold</strong>.</th>
-        <th class="tg-c3ow"><strong>Table 2.</strong> The DNSMOS scores of different methods on the DNS Challenge test set. Best scores are highlighted in <strong>bold</strong>.</th>
-      </tr>
-    </tfoot>
-  </table>
-</div>
-
-
-<div align="center">
-  <h2>Extra Demos</h2>
-</div>
-
-<div class="btn-ab" align="center">
-  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
-    <colgroup>
-      <col style="width: 0px">
-      <col style="width: 100px">
-      <col style="width: 100px">
-      <col style="width: 100px">
-	  <col style="width: 200px">
-    </colgroup>
-	
     <thead>
       <tr>
-		<th class="tg-c3ow">Init audio</th>
-        <th class="tg-c3ow">De-Codec</th>
-        <th class="tg-c3ow">SD model</th>
-		<th class="tg-c3ow">BGSR model</th>
-		<th class="tg-c3ow">Text instruction</th>
+        <th class="tg-c6ow">Audio Prompt</th>
+		<th class="tg-c6ow">Text Prompt</th>
+        <th class="tg-c6ow">SpeechTokenizer</th>
+		<th class="tg-c6ow">StoRM+SpeechTokenizer</th>
+		<th class="tg-c6ow">DeCodec: remove BGS</th>
+		<th class="tg-c6ow">DeCodec: preserve BGS</th>
       </tr>
     </thead>
     <tbody>
-	  
+
 	  <tr>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/Init/noreverb_fileid_13.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SBDCodec/noreverb_fileid_13.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SD/noreverb_fileid_13.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/BGSR/noreverb_fileid_13.wav" style="width:230px"></audio></td>
-		<td class="tg-ihkz">An engine revving and then tires squealing</td>	
-      </tr>
-	  
-	  <tr>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/Init/noreverb_fileid_33.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SBDCodec/noreverb_fileid_33.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SD/noreverb_fileid_33.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/BGSR/noreverb_fileid_33.wav"></audio></td>
-		<td class="tg-ihkz">A duck quacking</td>		
-      </tr>	  
-  
-	  <tr>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/Init/noreverb_fileid_98.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SBDCodec/noreverb_fileid_98.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SD/noreverb_fileid_98.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/BGSR/noreverb_fileid_98.wav"></audio></td>
-		<td class="tg-ihkz">Typing on a typewriter</td>
-      </tr>
-	  
-	  <tr>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/Init/noreverb_fileid_55.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SBDCodec/noreverb_fileid_55.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SD/noreverb_fileid_55.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/BGSR/noreverb_fileid_55.wav"></audio></td>
-		<td class="tg-ihkz">Small dogs yip and whimper</td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Reference/2.wav"></audio></td>
+		<td class="tg-ihkz">On friday confession will be heard all the afternoon after beads.</td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST/tts_2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST-storm/tts_2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/DeCodec/tts_2_denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Decodec-BGS/tts_2.wav"></audio></td>
       </tr>
 
-	  
 	  <tr>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/Init/noreverb_fileid_110.wav"></audio></td>
-        <td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SBDCodec/noreverb_fileid_110.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/SD/noreverb_fileid_110.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:230px">
-            <source src="audio/BGSR/noreverb_fileid_110.wav"></audio></td>
-		<td class="tg-ihkz">Rain and light thunder</td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Reference/5.wav"></audio></td>
+		<td class="tg-ihkz">I must know about you.</td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST/tts_5.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST-storm/tts_5.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/DeCodec/tts_5_denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Decodec-BGS/tts_5.wav"></audio></td>
       </tr>
 
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Reference/10.wav"></audio></td>
+		<td class="tg-ihkz">Then the leader parted from the line.</td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST/tts_10.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST-storm/tts_10.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/DeCodec/tts_10_denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Decodec-BGS/tts_10.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Reference/dune_f_2.wav"></audio></td>
+		<td class="tg-ihkz">Some things is crystal clear I can feel it.</td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST/tts_dune_f_2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST-storm/tts_dune_f_2.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/DeCodec/tts_dune_f_2_denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Decodec-BGS/tts_dune_f_2.wav"></audio></td>
+      </tr>
+
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Reference/HP_2_m.wav"></audio></td>
+		<td class="tg-ihkz">Welcome back, my old friend.</td>
+        <td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST/tts_HP_2_m.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/ST-storm/tts_HP_2_m.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/DeCodec/tts_HP_2_m_denoise.wav"></audio></td>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            <source src="audio/TTS/Decodec-BGS/tts_HP_2_m.wav"></audio></td>
+      </tr>
+
+	  <tr>
+	  </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+<div align="center">
+  <h2>An extra fun application—film dubbing with VC</h2>
+</div>
+
+<div class="btn-ab" align="center">
+  <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
+    <colgroup>
+      <col style="width: 100px">
+      <col style="width: 100px">
+      <col style="width: 100px">
+    </colgroup>
+	<thead>
+      <tr>
+        <th class="tg-c3ow">Audio prompt</th>
+		<th class="tg-c3ow">Init</th>
+        <th class="tg-c3ow">one-shot VC by using NAR of down stream TTS model.</th>
+      </tr>
+    </thead>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="vidio/hiccup/TS_prompt.wav"></audio></td>
+		<td class="tg-ihkz"><video controls="" style="width:400px">
+            	<source src="vidio/hiccup/hiccup.mp4"></video></td>
+		<td class="tg-ihkz"><video controls="" style="width:400px">
+				<source src="vidio/hiccup/hiccup_vc.mp4"></video></td>
+      </tr>
+    </tbody>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="vidio/dune/hp_prompt.wav"></audio></td>
+		<td class="tg-ihkz"><video controls="" style="width:400px">
+            	<source src="vidio/dune/dune.mp4"></video></td>
+		<td class="tg-ihkz"><video controls="" style="width:400px">
+				<source src="vidio/dune/dune_vc.mp4"></video></td>
+      </tr>
+    </tbody>
+    <tbody>
+	  <tr>
+		<td class="tg-ihkz"><audio controls="" style="width:190px">
+            	<source src="vidio/hp/dune_prompt.wav"></audio></td>
+		<td class="tg-ihkz"><video controls="" style="width:400px">
+            	<source src="vidio/hp/hp.mp4"></video></td>
+		<td class="tg-ihkz"><video controls="" style="width:400px">
+				<source src="vidio/hp/hp_vc.mp4"></video></td>
+      </tr>
     </tbody>
   </table>
 </div>
