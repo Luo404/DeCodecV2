@@ -17,7 +17,7 @@
 <body> <!-- onload="init();">-->
 <body> <!-- onload="init();">-->
 <div align="center">
-  <h1>DeCodec: Towards Controllable Audio Processing via Speech and Background sound Decoupling in Neural Codecs</h1>
+  <h1>DeCodec: Rethinking Audio Codecs as Universal disentangled representation Learners</h1>
 </div>
 
 <!-- <div align="center">
@@ -32,13 +32,11 @@
   <h2>Abstract</h2>
 </div>
 <div align="center" style="text-align: justify; text-align-last: left;">
-  <p>In real world, speech and background sound coexist, and different audio tasks focus on distinct information components above.
-This paper proposes a novel neural codec named DeCodec to DeCodec and further decomposes speech into semantic and residual paralinguistic, thereby enabling a unified feature extractor to provide controllable information representations tailored to different audio tasks, filling a gap in existing audio codecs. 
-Specifically, based on the classical codec architecture, the proposed DeCodec block projects primary audio embeddings into two orthogonal subspaces for representation. 
-	  Combined with the proposed representation swap training procedure, the two orthogonal subspaces can be constrained to correlate to the speech and background sound subspaces, respectively, enabling a parallel residual vector quantizers (RVQs) to quantize the speech and background sound vectors. Additionally, by introducing semantic guidance to speech RVQ, speech is hierarchically quantized into semantic and residual sublinguistic quantized vectors.
-Experimental results show that DeCodec alone can achieve speech reconstruction and speech enhancement tasks with advanced performance, and the one-shot VC task confirms the effective disentanglement of semantic-sublinguistic information. 
-	  DeCodec was also evaluated as a feature extractor for its contribution to ASR robustness, as well as its control over TTS generation and background noise preservation/suppression. 
-	  Comprehensive ablation studies confirm the necessity of each proposed methods in DeCodec.
+  <p>Universal audio codecs learn entangled representations across audio types, whereas some specific codecs offer decoupled representations but are limited to speech. Real-world audio, however, often contains mixed speech and background sounds, and downstream tasks require selective access to these components. Therefore, we rethink the audio codec as a universal disentangled representation learner to enable controllable feature selection across different audio tasks.
+To this end, we introduce DeCodec, a novel neural codec that learns to decouple audio representations into orthogonal subspaces dedicated to speech and background sound, and within speech, representations are further decomposed into semantic and paralinguistic components. This hierarchical disentanglement allows flexible feature selection, making DeCodec a universal front-end for multiple audio applications.
+Technically, built upon a codec framework, DeCodec incorporates two key innovations: a subspace orthogonal projection module that factorizes the input into two decoupled orthogonal subspaces, and a representation swap training procedure that ensures these two subspaces are correlate to the speech and background sound, respectively. These allows parallel RVQs  to quantize speech and background sound components independently. Furthermore, we employ semantic guidance to the speech RVQ to achieve semantic and paralinguistic decomposition.
+Experimental results show that DeCodec maintains advanced signal reconstruction while enabling new capabilities: 
+superior speech enhancement and effective one-shot voice conversion on noisy speech via representation recombination, improved ASR robustness through clean semantic features, and controllable background sound preservation/suppression in TTS.
   </p>
 </div>
 
