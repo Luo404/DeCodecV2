@@ -17,14 +17,14 @@
 <body> <!-- onload="init();">-->
 <body> <!-- onload="init();">-->
 <div align="center">
-  <h1>DeCodec: Rethinking Audio Codecs as Universal Disentangled Representation Learners</h1>
+  <h1>DeCodec: Towards Controllable Audio Processing via Speech and Background Sound Decoupling in Neural Codecs</h1>
 </div>
 
 <!-- <div align="center">
-  <h3><b>Xiaoxue Luo<sup>1,2</sup>, Jinwei Huang<sup>1,2</sup>, Runyan Yang<sup>1,2</sup>, Yingying Gao<sup>1,2</sup>, Shilei Zhang<sup>1,2,*</sup>, Junlan Feng<sup>1,2</sup>.</b></h3>
+  <h3><b>Xiaoxue Luo<sup>1,2</sup>, Jinwei Huang<sup>1,2</sup>, Runyan Yang<sup>1,2</sup>, Yanan Chen<sup>1,2</sup>, Yingying Gao<sup>1,2</sup>, Shilei Zhang<sup>1,2,*</sup>, Junlan Feng<sup>1,2</sup>.</b></h3>
 </div>
 <div align="center">
-  <p><sup>1</sup>China Mobile Research Institute, China</p>
+  <p><sup>1</sup>JIUTIAN Research, China</p>
   <p><sup>2</sup>State Key Laboratory of Multimedia Information Processing, Peking University, China</p>
 </div> -->
 
@@ -32,11 +32,11 @@
   <h2>Abstract</h2>
 </div>
 <div align="center" style="text-align: justify; text-align-last: left;">
-  <p>Universal audio codecs learn entangled representations across audio types, whereas some specific codecs offer decoupled representations but are limited to speech. Real-world audio, however, often contains mixed speech and background sounds, and downstream tasks require selective access to these components. Therefore, we rethink the audio codec as an universal disentangled representation learner to enable controllable feature selection across different audio tasks.
-To this end, we introduce DeCodec, a novel neural codec that learns to decouple audio representations into orthogonal subspaces dedicated to speech and background sound, and within speech, representations are further decomposed into semantic and paralinguistic components. This hierarchical disentanglement allows flexible feature selection, making DeCodec an universal front-end for multiple audio applications.
-Technically, built upon a codec framework, DeCodec incorporates two key innovations: a subspace orthogonal projection module that factorizes the input into two decoupled orthogonal subspaces, and a representation swap training procedure that ensures these two subspaces are correlate to the speech and background sound, respectively. These allows parallel RVQs to quantize speech and background sound components independently. Furthermore, we employ semantic guidance to the speech RVQ to achieve semantic and paralinguistic decomposition.
-Experimental results show that DeCodec maintains advanced signal reconstruction while enabling new capabilities: 
-superior speech enhancement and effective one-shot voice conversion on noisy speech via representation recombination, improved ASR robustness through clean semantic representations, and controllable background sound preservation/suppression in TTS.
+  <p>General audio codecs learn entangled representations across audio types, whereas some specific codecs offer decoupled representations but are limited to speech. Real-world audio, however, is often mixed with speech and background sounds, and downstream tasks require selective access to these components. 
+			Therefore, we propose DeCodec, which hierarchically decoupling audio representations into speech and background sound, and further decomposing speech representations into semantic and paralinguistic components, enabling flexible feature selection across different audio tasks.
+			Technically, built upon a codec framework, DeCodec incorporates two key innovations: a subspace orthogonal projection module that factorizes the input into two decoupled orthogonal subspaces, and a representation swap training procedure that ensures these two subspaces are correlate to the speech and background sound, respectively. These allows parallel RVQs to quantize speech and background sound components independently. Furthermore, we employ semantic guidance to the speech RVQ to achieve semantic and paralinguistic decomposition.
+			Experimental results show that DeCodec maintains advanced signal reconstruction while enabling new capabilities: 
+			superior speech enhancement via representation recombination, robustness improvement of speech recognition through decoupled semantic features, and controllable background sound preservation/suppression in speech synthesis.
   </p>
 </div>
 
@@ -61,8 +61,8 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
 <div align="center">
 	<img src="image/DeCodec-spec-demo-1.png" width="80%">
 	<p><strong>Figure 3.</strong> Demos of audio tasks processed by DeCodec.</p>
-	<!--p>(a-1) Init y<sub>11</sub>. (b-1) Reconstruction. (c-1) SE. (d-1) BGS Extraction. (e-1) one-shot VC with audio prompt y<sub>22</sub>. (f-1) one-shot VC+SE.</p>-->
-	<!---p>(a-2) Init y<sub>22</sub>. (b-2) Reconstruction. (c-2) SE. (d-2) BGS Extraction. (e-2) one-shot VC with audio prompt y<sub>11</sub>. (f-2) one-shot VC+SE.</p>-->
+	<!--p>(a-1) Init y<sub>11</sub>. (b-1) Reconstruction. (c-1) SE. (d-1) BGS Extraction.</p>-->
+	<!---p>(a-2) Init y<sub>22</sub>. (b-2) Reconstruction. (c-2) SE. (d-2) BGS Extraction.</p>-->
 </div>
 <div class="btn-ab" align="center">
   <table class="tg" align="center"><!--style="undefined;table-layout: fixed; width: 493px">-->
@@ -71,8 +71,6 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
       <col style="width: 100px">
       <col style="width: 100px">
       <col style="width: 100px">
-	  <col style="width: 100px">
-	  <col style="width: 100px">
     </colgroup>
     <tbody>	  
 	  <tr>
@@ -84,10 +82,6 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
             	<source src="audio/decodec-demo/3-test_pred_wave_s1denoise.wav"></audio></td>
 		<td class="tg-ihkz"><audio controls="" style="width:190px">
 				<source src="audio/decodec-demo/4-test_pred_wave_n1.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:190px">
-				<source src="audio/decodec-demo/5-test_pred_wave_c1r2n1.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:190px">
-				<source src="audio/decodec-demo/6-test_pred_wave_c1r2denoise.wav"></audio></td>
       </tr>
     </tbody>	
 	<tfoot>
@@ -96,8 +90,6 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
 		<th class="tg-c3ow">(b-1)</th>
         <th class="tg-c3ow">(c-1)</th>
         <th class="tg-c3ow">(d-1)</th>
-		<th class="tg-c3ow">(e-1)</th>
-		<th class="tg-c3ow">(f-1)</th>
       </tr>
     </tfoot>
   </table>
@@ -109,8 +101,6 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
       <col style="width: 100px">
       <col style="width: 100px">
       <col style="width: 100px">
-	  <col style="width: 100px">
-	  <col style="width: 100px">
     </colgroup>
     <tbody>	  
 	  <tr>
@@ -122,10 +112,6 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
             	<source src="audio/decodec-demo/a3-test_pred_wave_s2denoise.wav"></audio></td>
 		<td class="tg-ihkz"><audio controls="" style="width:190px">
 				<source src="audio/decodec-demo/a4-test_pred_wave_n2.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:190px">
-				<source src="audio/decodec-demo/a5-test_pred_wave_c2r1n2.wav"></audio></td>
-		<td class="tg-ihkz"><audio controls="" style="width:190px">
-				<source src="audio/decodec-demo/a6-test_pred_wave_c2r1denoise.wav"></audio></td>
       </tr>
     </tbody>	
 	<tfoot>
@@ -134,8 +120,6 @@ superior speech enhancement and effective one-shot voice conversion on noisy spe
 		<th class="tg-c3ow">(b-2)</th>
         <th class="tg-c3ow">(c-2)</th>
         <th class="tg-c3ow">(d-2)</th>
-		<th class="tg-c3ow">(e-2)</th>
-		<th class="tg-c3ow">(f-2)</th>
       </tr>
     </tfoot>
   </table>
